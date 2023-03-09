@@ -7,10 +7,12 @@ local args = {...};
 
 local uninstall = false;
 local forceInstall = false;
+local repair = false;
 
 for i,arg in ipairs(args) do
     if arg == "-u" then uninstall = true; end
     if arg == "-f" then forceInstall = true; end
+    if arg == "-r" then repair = true; end
 end
 
 function run_uninstall()
@@ -27,9 +29,13 @@ else
     if component.isAvailable("nc_fusion_reactor") or forceInstall then
         print("Starting Reactor Controller Setup | " .. version);
         if filesystem.exists("/ReactorController/Controller.lua") then
-            print("Detected controller already on system...");
-            print("Would you like to uninstall the Controller first? [Y/n]")
-            local answer = io.read();
+            if repair == false then
+                print("Detected controller already on system...");
+                print("Would you like to uninstall the Controller first? [Y/n]")
+                local answer = io.read();
+            else
+                answer = "Y"
+            end
             if answer == "n" or answer == "N" then
                 print("Closing Setup...");
                 os.sleep(1);
@@ -39,7 +45,11 @@ else
                 run_uninstall();
             end
         end
+        print("Starting Setup");
+
+    else
+        print("Error: No fusion reactor found, [Use -f to force install without it]");
+        os.exit();
     end
-    print("Starting Setup");
 end
 
