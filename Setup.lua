@@ -48,8 +48,9 @@ else
         end
         print("Starting Install...");
         shell.execute("mkdir /FusionController")
-        shell.execute("wget https://raw.githubusercontent.com/Corbinhol/Nuclear-Crafter-fusion-reactor-controller/main/Controller.lua /FusionController/Controller.lua -Q");
-        shell.execute("wget https://raw.githubusercontent.com/Corbinhol/Nuclear-Crafter-fusion-reactor-controller/main/Api.lua /FusionController/Api.lua -Q");
+        shell.execute("wget https://raw.githubusercontent.com/Corbinhol/Nuclear-Crafter-fusion-reactor-controller/main/Controller.lua /bin/Controller.lua -Q");
+        shell.execute("wget https://raw.githubusercontent.com/Corbinhol/Nuclear-Crafter-fusion-reactor-controller/main/Api.lua /home/FusionController/Api.lua -Q");
+        
     else
         print("Error: No fusion reactor found, [Use -f to force install without it]");
         os.exit();
