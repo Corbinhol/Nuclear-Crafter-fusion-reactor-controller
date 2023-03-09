@@ -1,3 +1,5 @@
+-- wget https://raw.githubusercontent.com/Corbinhol/Nuclear-Crafter-fusion-reactor-controller/main/Setup.lua -Q && Setup.lua
+
 local filesystem = require("filesystem");
 local component = require("component");
 local term = require("term");
@@ -19,6 +21,7 @@ end
 function run_uninstall()
     print("Uninstalling Reactor Controller...");
     os.sleep(1);
+    filesystem.remove("/bin/Controller.lua");
     filesystem.remove("/ReactorController");
 end
 
@@ -29,7 +32,7 @@ if uninstall then
 else
     if component.isAvailable("nc_fusion_reactor") or forceInstall then
         print("Starting Reactor Controller Setup | " .. version);
-        if filesystem.exists("/ReactorController/Controller.lua") then
+        if filesystem.exists("/bin/Controller.lua") then
             if repair == false then
                 print("Detected controller already on system...");
                 print("Would you like to uninstall the Controller first? [Y/n]")
@@ -50,7 +53,7 @@ else
         shell.execute("mkdir /FusionController")
         shell.execute("wget https://raw.githubusercontent.com/Corbinhol/Nuclear-Crafter-fusion-reactor-controller/main/Controller.lua /bin/Controller.lua -Q");
         shell.execute("wget https://raw.githubusercontent.com/Corbinhol/Nuclear-Crafter-fusion-reactor-controller/main/Api.lua /home/FusionController/Api.lua -Q");
-        
+
     else
         print("Error: No fusion reactor found, [Use -f to force install without it]");
         os.exit();
