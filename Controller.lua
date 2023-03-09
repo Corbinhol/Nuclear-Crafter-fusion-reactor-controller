@@ -6,7 +6,7 @@ local event = require("event");
 local serialization = require("serialization");
 local run = true;
 
-print("Testing 2")
+print("Testing 3")
 
 api["status"] = "Offline";
 api[""]
