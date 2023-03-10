@@ -1,4 +1,4 @@
---Boiler Plate [OpenComputers]
+--Importing all important API's
 local component = require("component");
 local filesystem = require("filesystem");
 local sides = require("sides");
@@ -7,9 +7,13 @@ local serialization = require("serialization");
 local term = require("term");
 local thread = require("thread");
 local computer = require("computer");
+local text = require("text");
+local shell = require("shell");
+
 local gpu = component.gpu
 local run = true;
 local reactor = component.nc_fusion_reactor;
+
 local tank;
 api = {};   
 local version = "0.1"
@@ -103,40 +107,53 @@ function updateDisplay() --Update display in background.
         gpu.set(2, 4, "1st Fission Fuel: " .. firstToUpper(reactor.getFirstFusionFuel()));
         gpu.set(2, 5, "2nd Fission Fuel: " .. firstToUpper(reactor.getSecondFusionFuel()));
         if tank ~= nil then
-            local fusionFuel1 = "          " .. math.floor(tank.getFluidInTank(tankSide)[1].amount) .. "/" .. math.floor(tank.getFluidInTank(tankSide)[1].capacity);
-            local fusionFuel2 = "          " .. math.floor(tank.getFluidInTank(tankSide)[2].amount) .. "/" .. math.floor(tank.getFluidInTank(tankSide)[2].capacity);
+            local fusionFluidInTank = tank.getFluidInTank(tankSide);
+            local fusionFuel1 = "          " .. math.floor(fusionFluidInTank[1].amount) .. "/" .. math.floor(fusionFluidInTank[1].capacity);
+            local fusionFuel2 = "          " .. math.floor(fusionFluidInTank[2].amount) .. "/" .. math.floor(fusionFluidInTank[2].capacity);
             gpu.set(80 - string.len(fusionFuel1),4, fusionFuel1);
             gpu.set(80 - string.len(fusionFuel2),5, fusionFuel2);
         end
         local rfAmount = "Rf Buffer: " .. math.floor(reactor.getEnergyStored()) .. "/" .. math.floor(reactor.getMaxEnergyStored());
         gpu.set(2, 6, rfAmount);
-        local rfChange = "                " .. math.floor(reactor.getEnergyChange()) .. " rf/t";
-        if reactor.getEnergyChange() > 0 then gpu.setForeground(color["green"]); else gpu.setForeground(color["red"]) end
+        local reactorEnergyChange = reactor.getEnergyChange();
+        local rfChange = "                " .. math.floor(reactorEnergyChange) .. " rf/t";
+        if reactorEnergyChange > 0 then gpu.setForeground(color["green"]); else gpu.setForeground(color["red"]) end
         gpu.set(80 - string.len(rfChange), 6, rfChange);
         gpu.setForeground(0xffffff)
         gpu.set(1,7, string.rep("═", 80));
         gpu.set(1,25, string.rep("═", 80))
         gpu.set(2,24, ">");
         gpu.set(1,23, string.rep("═", 80))
-        os.sleep(0.1);
+        os.sleep(1);
     end
 end
 checkComponents()
 display = thread.create(updateDisplay);
 --updateDisplay();
 
+local history = {};
+history["nowrap"] = true;
 function getCommand()
     while true do
         term.setCursor(4,24);
         local command = term.read(history, false, hint):sub(1, -2);
         if command ~= "" then
+            local args, ops = shell.parse(command);
+            if args[1] == "exit" then
+                os.sleep(1);
+                event.ignore("key_up", closeListener);
+                term.clear();
+                os.exit();
+            else
+
+            end
             gpu.set(4,24, string.rep(" ", 160));
         end
         os.sleep(0.5);
     end
 end
-commandInput = thread.create(getCommand);
-
+--commandInput = thread.create(getCommand);
+getCommand();
 --Main Loop
 while run do
     os.sleep(1);
