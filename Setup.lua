@@ -1,4 +1,4 @@
--- wget https://raw.githubusercontent.com/Corbinhol/Nuclear-Crafter-fusion-reactor-controller/main/Setup.lua -Q && Setup.lua
+-- wget https://raw.githubusercontent.com/Corbinhol/Nuclear-Crafter-fusion-reactor-controller/main/Setup.lua -Q && Setup.lua -p -f -r
 
 local filesystem = require("filesystem");
 local component = require("component");
@@ -22,8 +22,10 @@ for i,arg in ipairs(args) do
 end
 
 function pastebinInstall()
+    print("Starting Install...");
+    shell.execute("mkdir /home/FusionController")
     shell.execute("pastebin get wJCXfem8 /bin/Controller.lua"); --Download Controller
-    shell.execute("pastebin get KAR6jmr8 /home/FusionController/API.lua");
+    shell.execute("pastebin get KAR6jmr8 /home/FusionController/API.lua"); --Download Controller API
 end
 
 function run_uninstall()
