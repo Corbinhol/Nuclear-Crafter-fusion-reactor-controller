@@ -23,7 +23,7 @@ function run_uninstall()
     print("Uninstalling Reactor Controller...");
     os.sleep(1);
     filesystem.remove("/bin/Controller.lua");
-    filesystem.remove("/home/ReactorController");
+    filesystem.remove("/home/FusionController/");
 end
 
 term.clear();
