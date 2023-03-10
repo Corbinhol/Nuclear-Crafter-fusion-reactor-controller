@@ -9,9 +9,29 @@ local thread = require("thread");
 local computer = require("computer");
 local gpu = component.gpu
 local run = true;
-api = {};
+local reactor = component.nc_fusion_reactor;
+local tank;
+api = {};   
 local version = "0.1"
 api["status"] = "Offline";
+
+local hasTank = false;
+local tankSide;
+
+function checkComponents() --Check all components.
+    if component.isAvailable("tank_controller") then --check if tank upgrade/adapter is attatched
+        tank = component.tank_controller; 
+        for i=1,6 do
+            if tank.getTankCapacity() > 0 then --find side with tank
+                tankSide == i;
+                break;
+            end
+        end
+        if tankSide == nil then --if no side has a tank, assume tank doesn't exist. remove tank.
+            tank = nil;
+        end
+    end
+end
 
 function closeListener(_, _, key) --Kill Switch
     if key == nil then key = 96; end
@@ -57,9 +77,13 @@ function updateDisplay() --Update display in background.
     gpu.set(1,1, string.rep("═", 80));
     gpu.set(2,2, "Reactor Controller [Version " .. version .. "]");
     gpu.set(2,3, "Reactor Status: ");
-    local uptime = indexTime(math.floor(computer.uptime()))
-    gpu.set(80 - string.len(uptime), 3, "Uptime: " .. uptime);
-    gpu.set(2,4, "Autostart: ");
+    local uptime = "Uptime: " .. indexTime(math.floor(computer.uptime()))
+    gpu.set(80 - string.len(uptime), 2, uptime);
+    local fusionHeat = "           Temperature: " .. math.floor(reactor.getTemperature() / 1000);
+    gpu.set(80 - string.len(fusionHeat), 3, fusionHeat);
+    gpu.set(2, 4, "1st Fission Fuel: " .. reactor.getFirstFusionFuel());
+    gpu.set(2, 5, "2nd Fission Fuel: " .. reactor.getSecondFusionFuel());
+    local fusionFuel1 = "          " .. tank.getFluidsInTank(sides.)
     end
 end
 display = thread.create(updateDisplay);
