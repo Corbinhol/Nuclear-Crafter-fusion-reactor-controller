@@ -1,5 +1,5 @@
 -- wget https://raw.githubusercontent.com/Corbinhol/Nuclear-Crafter-fusion-reactor-controller/main/Setup.lua -Q && Setup.lua -p -f -r
-
+-- pastebin get fFxDjyhu Setup.lua && Setup -f -r -p
 
 --Importing various APIs
 local filesystem = require("filesystem");
