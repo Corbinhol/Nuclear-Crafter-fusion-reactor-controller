@@ -66,7 +66,7 @@ display = thread.create(updateDisplay);
 
 --Main Loop
 while run do
-    os.sleep(0);
+    os.sleep(1);
 end
 
 --Program Close
