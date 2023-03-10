@@ -52,14 +52,14 @@ local function indexTime(timeInSeconds)
 end
 
 function updateDisplay()
-    while run do
     term.clear();
+    while run do
     gpu.set(1,1, string.rep("═", 80));
     gpu.set(2,2, "Reactor Controller [Version " .. version .. "]");
     gpu.set(2,3, "Reactor Status: ");
-    gpu.set(20, 3, "Uptime: " .. indexTime(computer.uptime()));
+    local uptime = indexTime(math.floor(computer.uptime()))
+    gpu.set(80 - string.len(uptime), 3, "Uptime: " .. uptime);
     gpu.set(2,4, "Autostart: ");
-
     end
 end
 display = thread.create(updateDisplay);
