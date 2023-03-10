@@ -33,8 +33,8 @@ end
 function updateDisplay()
     while run do
     term.clear();
-    gpu.set(1,1 string.rep("═", 80))
-    gpu.set(2,2 "Reactor Controller [Version " .. version .. "]")
+    gpu.set(1,1, string.rep("═", 80));
+    gpu.set(2,2, "Reactor Controller [Version " .. version .. "]");
     end
 end
 
