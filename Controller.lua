@@ -5,7 +5,7 @@ local sides = require("sides");
 local event = require("event");
 local serialization = require("serialization");
 local term = require("term");
-local gpu = require("gpu");
+local gpu = component.gpu
 local run = true;
 
 local version = "0.1"
