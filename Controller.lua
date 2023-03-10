@@ -5,6 +5,7 @@ local sides = require("sides");
 local event = require("event");
 local serialization = require("serialization");
 local term = require("term");
+local thread = require("thread");
 local gpu = component.gpu
 local run = true;
 api = {};
@@ -37,7 +38,7 @@ function updateDisplay()
     gpu.set(2,2, "Reactor Controller [Version " .. version .. "]");
     end
 end
-
+display = thread.create(updateDisplay);
 
 --Main Loop
 while run do
