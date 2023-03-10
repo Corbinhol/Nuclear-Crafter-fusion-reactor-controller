@@ -7,7 +7,7 @@ local serialization = require("serialization");
 local term = require("term");
 local gpu = component.gpu
 local run = true;
-
+api = {};
 local version = "0.1"
 api["status"] = "Offline";
 
