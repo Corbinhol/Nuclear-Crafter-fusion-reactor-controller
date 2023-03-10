@@ -23,7 +23,7 @@ function run_uninstall()
     print("Uninstalling Reactor Controller...");
     os.sleep(1);
     filesystem.remove("/bin/Controller.lua");
-    filesystem.remove("/ReactorController");
+    filesystem.remove("/home/ReactorController");
 end
 
 term.clear();
@@ -55,7 +55,7 @@ else
             end
         end
         print("Starting Install...");
-        shell.execute("mkdir /FusionController")
+        shell.execute("mkdir /home/FusionController")
         shell.execute("wget https://raw.githubusercontent.com/Corbinhol/Nuclear-Crafter-fusion-reactor-controller/main/Controller.lua /bin/Controller.lua -Q");
         shell.execute("wget https://raw.githubusercontent.com/Corbinhol/Nuclear-Crafter-fusion-reactor-controller/main/Api.lua /home/FusionController/Api.lua -Q");
         shell.execute("rm Setup.lua");
