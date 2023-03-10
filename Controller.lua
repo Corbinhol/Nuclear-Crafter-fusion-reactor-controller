@@ -13,7 +13,7 @@ api = {};
 local version = "0.1"
 api["status"] = "Offline";
 
-function closeListener(_, _, key)
+function closeListener(_, _, key) --Kill Switch
     if key == nil then key = 96; end
     if key == 96 then
         print("Killing Program...");
@@ -32,7 +32,7 @@ function stop()
 
 end
 
-local function indexTime(timeInSeconds)
+local function indexTime(timeInSeconds) --Convert Uptime to digital time.
     local numberOfSeconds = timeInSeconds % 60;
     local numberOfMinutes = math.floor(timeInSeconds / 60);
     local numberOfHours = math.floor(numberOfMinutes / 60);
@@ -51,7 +51,7 @@ local function indexTime(timeInSeconds)
     return output;
 end
 
-function updateDisplay()
+function updateDisplay() --Update display in background.
     term.clear();
     while run do
     gpu.set(1,1, string.rep("═", 80));
