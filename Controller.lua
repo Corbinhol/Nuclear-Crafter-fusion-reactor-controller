@@ -83,7 +83,11 @@ function updateDisplay() --Update display in background.
     gpu.set(80 - string.len(fusionHeat), 3, fusionHeat);
     gpu.set(2, 4, "1st Fission Fuel: " .. reactor.getFirstFusionFuel());
     gpu.set(2, 5, "2nd Fission Fuel: " .. reactor.getSecondFusionFuel());
-    local fusionFuel1 = "          " .. tank.getFluidsInTank(sides.)
+    if tank ~= nil then
+        local fusionFuel1 = "          " .. tank.getFluidsInTank(tankSide)[1].amount .. "/" .. tank.getFluidsInTank(tankSide)[1].capacity;
+        local fusionFuel2 = "          " .. tank.getFluidsInTank(tankSide)[2].amount .. "/" .. tank.getFluidsInTank(tankSide)[2].capacity;
+        gpu.set(80 - string.len(fusionFuel1),4, fusionFuel1);
+        gpu.set(80 - string.len(fusionFuel2),4, fusionFuel2);
     end
 end
 display = thread.create(updateDisplay);
