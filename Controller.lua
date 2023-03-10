@@ -13,7 +13,7 @@ local reactor = component.nc_fusion_reactor;
 local tank;
 api = {};   
 local version = "0.1"
-api["status"] = "Disabled";
+api["status"] = "Running";
 
 local hasTank = false;
 local tankSide;
@@ -77,12 +77,25 @@ local function indexTime(timeInSeconds) --Convert Uptime to digital time.
     return output;
 end
 
+
+local color = {};
+color["Disabled"] = 0xff0000;
+color["Running"] = 0x00ff08;
+color["Warming Up"] = 0xff9500
+color["green"] = 0x00ff08;
+color["red"] = 0xff0000;
+
+
+
 function updateDisplay() --Update display in background.
     term.clear();
     while run do
         gpu.set(1,1, string.rep("═", 80));
         gpu.set(2,2, "Reactor Controller [Version " .. version .. "]");
-        gpu.set(2,3, "Reactor Status: " .. api["status"]);
+        gpu.set(2,3, "Reactor Status: ")
+        gpu.setForeground(color[api["status"]]);
+        gpu.set(2 + string.len("Reactor Status: "),3, api["status"])
+        gpu.setForeground(0xffffff);
         local uptime = "Uptime: " .. indexTime(math.floor(computer.uptime()))
         gpu.set(80 - string.len(uptime), 2, uptime);
         local fusionHeat = "           Temperature: " .. math.floor(reactor.getTemperature() / 1000) .. "kK";
@@ -97,14 +110,32 @@ function updateDisplay() --Update display in background.
         end
         local rfAmount = "Rf Buffer: " .. math.floor(reactor.getEnergyStored()) .. "/" .. math.floor(reactor.getMaxEnergyStored());
         gpu.set(2, 6, rfAmount);
-        local rfChange = math.floor(reactor.getEnergyChange()) .. "rf/t";
+        local rfChange = "                " .. math.floor(reactor.getEnergyChange()) .. " rf/t";
+        if reactor.getEnergyChange() > 0 then gpu.setForeground(color["green"]); else gpu.setForeground(color["red"]) end
         gpu.set(80 - string.len(rfChange), 6, rfChange);
+        gpu.setForeground(0xffffff)
+        gpu.set(1,7, string.rep("═", 80));
+        gpu.set(1,25, string.rep("═", 80))
+        gpu.set(2,24, ">");
+        gpu.set(1,23, string.rep("═", 80))
         os.sleep(0.1);
     end
 end
 checkComponents()
---display = thread.create(updateDisplay);
-updateDisplay();
+display = thread.create(updateDisplay);
+--updateDisplay();
+
+function getCommand()
+    while true do
+        term.setCursor(4,24);
+        local command = term.read(history, false, hint):sub(1, -2);
+        if command ~= "" then
+            gpu.set(4,24, string.rep(" ", 160));
+        end
+        os.sleep(0.5);
+    end
+end
+commandInput = thread.create(getCommand);
 
 --Main Loop
 while run do
