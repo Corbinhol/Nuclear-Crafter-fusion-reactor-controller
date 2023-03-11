@@ -16,12 +16,14 @@ local uninstall = false;
 local forceInstall = false;
 local repair = false;
 local pastebin = false;
+local stayOn = false;
 
 for i,arg in ipairs(args) do
     if arg == "-u" then uninstall = true; end
     if arg == "-f" then forceInstall = true; end
     if arg == "-r" then repair = true; end
     if arg == "-p" then pastebin = true; end
+    if arg == "-s" then stayOn = true; end
 end
 
 function pastebinInstall() --Alternative Install through pastebin instead of github
@@ -83,12 +85,18 @@ else
         else --if not pastebin install, install through github.
             print("Starting Install...");
             shell.execute("mkdir /home/FusionController")
+            print("Downloading Controller...");
             shell.execute("wget https://raw.githubusercontent.com/Corbinhol/Nuclear-Crafter-fusion-reactor-controller/main/Controller.lua /bin/Controller.lua -Q");
+            print("Downloading API...")
             shell.execute("wget https://raw.githubusercontent.com/Corbinhol/Nuclear-Crafter-fusion-reactor-controller/main/Api.lua /home/FusionController/Api.lua -Q");
         end
         shell.execute("rm Setup.lua"); --remove setup after install (github only.)
-        print("Finished Installing. Press any key to restart.");
-        io.read();
+        if stayOn then
+            print("Closing Setup");
+        else
+            print("Finished Installing. Press any key to restart.");
+            io.read();
+        end
         computer.shutdown(true); --Restart computer afterwards.
     else --If Fusion Reactor doesn't exist, then don't run installer (unless force parameter is used)
         print("Error: No fusion reactor found, [Use -f to force install without it]");

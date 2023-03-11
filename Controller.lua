@@ -12,7 +12,7 @@ local shell = require("shell");
 
 local gpu = component.gpu
 local run = true;
-local reactor = component.nc_fusion_reactor;
+
 
 local tank;
 api = {};   
@@ -21,8 +21,9 @@ api["status"] = "Running";
 
 local hasTank = false;
 local tankSide;
+local reactor;
 
-function firstToUpper(str)
+function firstToUpper(str) --Capitalizes first letter of a string. Used for fuel names.
     return (str:gsub("^%l", string.upper))
 end
 
@@ -40,6 +41,13 @@ function checkComponents() --Check all components.
             print("No Sides Found.")
             tank = nil;
         end
+    end
+
+    if component.isAvailable("nc_fusion_reactor") then --if no reactor, 
+        reactor = component.nc_fusion_reactor;
+    else    
+        print("Reactor not connected. Please connect reactor before starting program");
+        os.exit();
     end
 end
 
@@ -62,7 +70,7 @@ function stop()
 
 end
 
-local function indexTime(timeInSeconds) --Convert Uptime to digital tim
+local function indexTime(time) --Convert Uptime to digital time
     local days = floor(time/86400)
     local hours = floor(mod(time, 86400)/3600)
     local minutes = floor(mod(time,3600)/60)
@@ -70,7 +78,7 @@ local function indexTime(timeInSeconds) --Convert Uptime to digital tim
     return format("%d:%02d:%02d:%02d",days,hours,minutes,seconds)
 end
 
-
+--Set colors for display
 local color = {};
 color["Disabled"] = 0xff0000;
 color["Running"] = 0x00ff08;
@@ -86,32 +94,35 @@ function updateDisplay() --Update display in background.
         gpu.set(1,1, string.rep("═", 80));
         gpu.set(2,2, "Reactor Controller [Version " .. version .. "]");
         gpu.set(2,3, "Reactor Status: ")
-        gpu.setForeground(color[api["status"]]);
+        gpu.setForeground(color[api["status"]]); --Set the color based on the status
         gpu.set(2 + string.len("Reactor Status: "),3, api["status"])
-        gpu.setForeground(0xffffff);
-        local uptime = indexTime(math.floor(computer.uptime()));
+        gpu.setForeground(0xffffff); --Set color back to white
+        local uptime = indexTime(math.floor(computer.uptime())); -- Get the total uptime of computer, and format it.
         gpu.set(80 - string.len("Uptime: " .. uptime), 2, "Uptime: ");
-        gpu.setForeground(color["Warming Up"]);
+        gpu.setForeground(color["Warming Up"]); --Set color of timestamp to orange (is same color as Warming Up) 
         gpu.set(80 - string.len(uptime), 2, uptime);
-        gpu.setForeground(0xffffff);
+        gpu.setForeground(0xffffff); --Set Color back to white
+        --Get total reactor temperature.
         local fusionHeat = "           Temperature: " .. math.floor(reactor.getTemperature() / 1000) .. "kK";
         gpu.set(80 - string.len(fusionHeat), 3, fusionHeat);
         gpu.set(2, 4, "1st Fission Fuel: " .. firstToUpper(reactor.getFirstFusionFuel()));
         gpu.set(2, 5, "2nd Fission Fuel: " .. firstToUpper(reactor.getSecondFusionFuel()));
-        if tank ~= nil then
+        if tank ~= nil then --Only print fuel information, if tank controller exist.
             local fusionFluidInTank = tank.getFluidInTank(tankSide);
             local fusionFuel1 = "          " .. math.floor(fusionFluidInTank[1].amount) .. "/" .. math.floor(fusionFluidInTank[1].capacity);
             local fusionFuel2 = "          " .. math.floor(fusionFluidInTank[2].amount) .. "/" .. math.floor(fusionFluidInTank[2].capacity);
             gpu.set(80 - string.len(fusionFuel1),4, fusionFuel1);
             gpu.set(80 - string.len(fusionFuel2),5, fusionFuel2);
         end
+        --get amount of rf in reactor
         local rfAmount = "Rf Buffer: " .. math.floor(reactor.getEnergyStored()) .. "/" .. math.floor(reactor.getMaxEnergyStored());
-        gpu.set(2, 6, rfAmount);
-        local reactorEnergyChange = reactor.getEnergyChange();
+        gpu.set(2, 6, rfAmount); 
+        local reactorEnergyChange = reactor.getEnergyChange(); --get rf change
         local rfChange = "                " .. math.floor(reactorEnergyChange) .. " rf/t";
+
         if reactorEnergyChange > 0 then gpu.setForeground(color["green"]); else gpu.setForeground(color["red"]) end
         gpu.set(80 - string.len(rfChange), 6, rfChange);
-        gpu.setForeground(0xffffff)
+        gpu.setForeground(0xffffff) 
         gpu.set(1,7, string.rep("═", 80));
         gpu.set(1,25, string.rep("═", 80))
         gpu.set(2,24, ">");
@@ -144,8 +155,8 @@ function getCommand()
         os.sleep(0.5);
     end
 end
---commandInput = thread.create(getCommand);
-getCommand();
+commandInput = thread.create(getCommand);
+--getCommand();
 --Main Loop
 while run do
     os.sleep(1);
