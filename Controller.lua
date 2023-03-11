@@ -62,23 +62,12 @@ function stop()
 
 end
 
-local function indexTime(timeInSeconds) --Convert Uptime to digital time.
-    local numberOfSeconds = timeInSeconds % 60;
-    local numberOfMinutes = math.floor(timeInSeconds / 60);
-    local numberOfHours = math.floor(numberOfMinutes / 60);
-    numberOfMinutes = numberOfMinutes % 60;
-    local numberOfDays = math.floor(numberOfHours / 24);
-    numberOfHours = numberOfHours % 24;
-
-    if numberOfSeconds < 10 then numberOfSeconds = "" .. 0 .. numberOfSeconds; end
-    if numberOfMinutes < 10 then numberOfMinutes = "" .. 0 .. numberOfMinutes; end
-    if numberOfHours < 10 then numberOfHours = "" .. 0 .. numberOfHours; end
-    if numberOfDays < 10 then numberOfDays = "" .. 0 .. numberOfDays; end
-    local output = "";
-    if numberOfDays ~= "00" then output = output .. numberOfDays .. ":"; end
-    if numberOfHours ~= "00" then output = output .. numberOfHours .. ":"; end
-    output = output .. numberOfMinutes .. ":" .. numberOfSeconds;
-    return output;
+local function indexTime(timeInSeconds) --Convert Uptime to digital tim
+    local days = floor(time/86400)
+    local hours = floor(mod(time, 86400)/3600)
+    local minutes = floor(mod(time,3600)/60)
+    local seconds = floor(mod(time,60))
+    return format("%d:%02d:%02d:%02d",days,hours,minutes,seconds)
 end
 
 
