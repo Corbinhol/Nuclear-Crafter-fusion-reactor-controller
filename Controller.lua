@@ -89,8 +89,11 @@ function updateDisplay() --Update display in background.
         gpu.setForeground(color[api["status"]]);
         gpu.set(2 + string.len("Reactor Status: "),3, api["status"])
         gpu.setForeground(0xffffff);
-        local uptime = "Uptime: " .. indexTime(math.floor(computer.uptime()))
+        local uptime = indexTime(math.floor(computer.uptime()));
+        gpu.set(80 - string.len("Uptime: " .. uptime), 2, "Uptime: ");
+        gpu.setForeground(color["Warming Up"]);
         gpu.set(80 - string.len(uptime), 2, uptime);
+        gpu.setForeground(0xffffff);
         local fusionHeat = "           Temperature: " .. math.floor(reactor.getTemperature() / 1000) .. "kK";
         gpu.set(80 - string.len(fusionHeat), 3, fusionHeat);
         gpu.set(2, 4, "1st Fission Fuel: " .. firstToUpper(reactor.getFirstFusionFuel()));
