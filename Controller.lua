@@ -11,23 +11,22 @@ local text = require("text");
 local shell = require("shell");
 
 local gpu = component.gpu
-local run = true;
-
-
 local tank;
+
 api = {};   
-local version = "0.1"
+local version = "0.4"
 api["status"] = "Running";
+local run = true;
 
 local hasTank = false;
 local tankSide;
 local reactor;
 
-function firstToUpper(str) --Capitalizes first letter of a string. Used for fuel names.
+local function firstToUpper(str) --Capitalizes first letter of a string. Used for fuel names.
     return (str:gsub("^%l", string.upper))
 end
 
-function checkComponents() --Check all components.
+local function checkComponents() --Check all components.
     if component.isAvailable("tank_controller") then --check if tank upgrade/adapter is attatched
         tank = component.tank_controller; 
         for i=0,5 do
@@ -51,7 +50,7 @@ function checkComponents() --Check all components.
     end
 end
 
-function closeListener(_, _, key) --Kill Switch
+local function closeListener(_, _, key) --Kill Switch
     if key == nil then key = 96; end
     if key == 96 then
         print("Killing Program...");
@@ -75,7 +74,7 @@ local function indexTime(time) --Convert Uptime to digital time
     local hours = math.floor((time % 86400)/3600)
     local minutes = math.floor((time % 3600)/60)
     local seconds = math.floor((time % 60))
-    return string.format("%d:%02d:%02d:%02d",days,hours,minutes,seconds)
+    return string.format("%02d:%02d:%02d:%02d",days,hours,minutes,seconds)
 end
 
 --Set colors for display
@@ -88,7 +87,7 @@ color["red"] = 0xff0000;
 
 
 
-function updateDisplay() --Update display in background.
+local function updateDisplay() --Update display in background.
     term.clear();
     while run do
         gpu.set(1,1, string.rep("═", 80));
@@ -130,13 +129,14 @@ function updateDisplay() --Update display in background.
         os.sleep(1);
     end
 end
+
 checkComponents()
 display = thread.create(updateDisplay);
 --updateDisplay();
 
 local history = {};
 history["nowrap"] = true;
-function getCommand()
+local function getCommand()
     while true do
         term.setCursor(4,24);
         local command = term.read(history, false, hint):sub(1, -2);
@@ -145,6 +145,7 @@ function getCommand()
             if args[1] == "exit" then
                 os.sleep(1);
                 event.ignore("key_up", closeListener);
+                run = false;
                 term.clear();
                 os.exit();
             else
@@ -156,10 +157,8 @@ function getCommand()
     end
 end
 commandInput = thread.create(getCommand);
---getCommand();
---Main Loop
 while run do
-    os.sleep(1);
+    os.sleep(.1);
 end
 
 --Program Close

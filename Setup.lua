@@ -1,5 +1,4 @@
--- wget https://raw.githubusercontent.com/Corbinhol/Nuclear-Crafter-fusion-reactor-controller/main/Setup.lua -Q && Setup.lua -p -f -r
--- pastebin get fFxDjyhu Setup.lua && Setup -f -r -p
+-- pastebin get fFxDjyhu Setup.lua && Setup -f -r -p -s
 
 --Importing various APIs
 local filesystem = require("filesystem");
@@ -26,17 +25,17 @@ for i,arg in ipairs(args) do
     if arg == "-s" then stayOn = true; end
 end
 
-function pastebinInstall() --Alternative Install through pastebin instead of github
+local function pastebinInstall() --Alternative Install through pastebin instead of github
     print("Starting Install...");
     shell.execute("mkdir /home/FusionController")
-    shell.execute("pastebin get wJCXfem8 /bin/Controller.lua"); --Download Controller
+    shell.execute("pastebin get wJCXfem8 /bin/controller.lua"); --Download Controller
     shell.execute("pastebin get KAR6jmr8 /home/FusionController/API.lua"); --Download Controller API
 end
 
-function run_uninstall() --Uninstall the program.
+local function run_uninstall() --Uninstall the program.
     print("Uninstalling Reactor Controller...");
     os.sleep(1);
-    filesystem.remove("/bin/Controller.lua");
+    filesystem.remove("/bin/controller.lua");
     filesystem.remove("/home/FusionController/");
 end
 
@@ -51,7 +50,7 @@ if uninstall then --If uninstall parameter is detected, only uninstall.
 else
     if component.isAvailable("nc_fusion_reactor") or forceInstall then --Check if fusion reactor is connected to computer, or if force install is enabled.
         print("Starting Reactor Controller Setup | " .. version);
-        if filesystem.exists("/bin/Controller.lua") then --Check if program already exists on computer.
+        if filesystem.exists("/bin/controller.lua") then --Check if program already exists on computer.
             if repair == false then --If repair is enabled, skip asking and uninstall, else ask if they want to uninstall.
                 print("Detected controller already on system...");
                 print("Would you like to uninstall the Controller first? [Y/n]");
@@ -86,7 +85,7 @@ else
             print("Starting Install...");
             shell.execute("mkdir /home/FusionController")
             print("Downloading Controller...");
-            shell.execute("wget https://raw.githubusercontent.com/Corbinhol/Nuclear-Crafter-fusion-reactor-controller/main/Controller.lua /bin/Controller.lua -Q");
+            shell.execute("wget https://raw.githubusercontent.com/Corbinhol/Nuclear-Crafter-fusion-reactor-controller/main/Controller.lua /bin/controller.lua -Q");
             print("Downloading API...")
             shell.execute("wget https://raw.githubusercontent.com/Corbinhol/Nuclear-Crafter-fusion-reactor-controller/main/Api.lua /home/FusionController/Api.lua -Q");
         end
@@ -96,11 +95,10 @@ else
         else
             print("Finished Installing. Press any key to restart.");
             io.read();
+            computer.shutdown(true); --Restart computer afterwards.
         end
-        computer.shutdown(true); --Restart computer afterwards.
     else --If Fusion Reactor doesn't exist, then don't run installer (unless force parameter is used)
         print("Error: No fusion reactor found, [Use -f to force install without it]");
         os.exit();
     end
 end
-

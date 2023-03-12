@@ -14,9 +14,14 @@ function stop()
     return "does not exist"
 end
 
-if component.isAvailable("tunnel") then
+if component.isAvailable("tunnel") or component.isAvailable("modem") then
     if api == nil then
-        modem = component.tunnel;
+        if component.isAvailable("tunnel") then
+            modem = component.tunnel;
+        else
+            modem = component.modem;
+        end
+
         modem.open(60);
         modem.setWakeMessage("wakeup");
         apiData = {};
@@ -24,16 +29,14 @@ if component.isAvailable("tunnel") then
         apiAlias = "";
 
         local function respond(address, message1, message2, message3, message4, message5, message6, message7)
-            local out = modem.send(address, 60, "apiResponse", message1, message2, message3, message4, message5, message6, message7);
+            local out = modem.send(address, 60, "reactor", message1, message2, message3, message4, message5, message6, message7);
             return out, message1;
         end
 
         local function apiLoop()
             while true do
-                local _, _, from, _, _, _, arg1, arg2, arg3, arg4, arg5, arg6, arg7 = event.pull("modem_message", nil, nil, nil, nil, "api"); 
-                if arg1 == nil then arg1 = "nothing"; else
-                --print("Recieved " .. tostring(arg1));
-                end
+                local _, _, from, _, _, _, arg1, arg2, arg3, arg4, arg5, arg6, arg7 = event.pull("modem_message", nil, nil, nil, nil, "reactor"); 
+                if arg1 == nil then arg1 = "nothing"; end
                 --Commands
                 if arg1 == "getdata" then
                     if apiData[arg2] == nil then modem.send(from, 60, "nothing") else
